@@ -66,6 +66,19 @@ export default Route.extend(Pagination, {
     return yield this.queryPaginated('library-entry', options);
   }).restartable(),
 
+  actions: {
+    saveEntry(changeset) {
+      return changeset.save();
+    },
+
+    removeEntry(entry) {
+      return entry.destroyRecord().catch((error) => {
+        entry.rollbackAttributes();
+        get(this, 'raven').captureException(error);
+      });
+    }
+  },
+
   /**
    * Convert the query param `sort` key into a key that the API expects.
    *
